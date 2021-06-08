@@ -58,16 +58,7 @@ export default function IndexPage() {
 
   return (
     <div style={{ fontFamily: 'sans-serif' }}>
-      <header
-        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-      >
-        {mode === 'view' ? (
-          <button onClick={returnToSearch} style={{ marginRight: '1em' }}>
-            ←
-          </button>
-        ) : null}
-        <h1 style={{ marginRight: 'auto' }}>Gist Viewer</h1>
-      </header>
+      <Header showBackButton={mode === 'view'} onBackClick={returnToSearch} />
       {mode === 'search' ? (
         <>
           <div style={{ display: 'inline-flex', flexDirection: 'column' }}>
@@ -89,6 +80,21 @@ export default function IndexPage() {
       ) : null}
       {mode === 'view' ? <GistDetailView gistId={gistId} /> : null}
     </div>
+  )
+}
+
+function Header({ showBackButton, onBackClick }) {
+  return (
+    <header
+      style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+    >
+      {showBackButton ? (
+        <button onClick={onBackClick} style={{ marginRight: '1em' }}>
+          ←
+        </button>
+      ) : null}
+      <h1 style={{ marginRight: 'auto' }}>Gist Viewer</h1>
+    </header>
   )
 }
 
