@@ -11,6 +11,8 @@ I spent about 2 hours and 30 minutes with a break in the middle. Core functional
 - Exploring Next.js pages while maintaining the state of the Apollo client cache. I would like it if when searching for a user's gists, clicking on a gist summary would navigate to a page like `/gists/{gistId}`, and when pressing the back button, it would navigate back to the list of search results at the previous state you were viewing it. I didn't get time to explore the intersection of Next.js pages and Apollo client caching to make sure they were better in sync and opted to have everything accessible at one URL (`/`) with page state managed with React.
 - Set up ESLint and possibly TypeScript. These are a couple of developer tools that I appreciate using, but trying to confine myself to ~2 hour time limit, I chose not to set these up at this time, despite finding them especially valuable to warn for common errors (especially mispelled, improperly defined variables, or React hook dependency arrays).
 
+Check out `pages/index.js` to view the client-side code. The server-side code that defines the GraphQL schema and interactions with Postgres and GitHub are in the `src/` directory.
+
 ## Setup
 
 Ensure that you have [Docker](https://docs.docker.com/get-docker/) installed on your machine.
