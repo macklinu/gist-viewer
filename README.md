@@ -19,6 +19,8 @@ Ensure that you have [Docker](https://docs.docker.com/get-docker/) installed on 
 
 To run the application, run `docker-compose up` to boot up the web application container and the Postgres container. The app will be running at http://localhost:3000.
 
+To view an interactive GraphQL API playground, visit http://localhost:3000/api/graphql.
+
 To stop the development server, press <kbd>ctrl+c</kbd>.
 
 If you choose to add or remove dependencies, you at times may need to run `docker-compose down` and `docker-compose rebuild web` for the node module changes to take effect.
