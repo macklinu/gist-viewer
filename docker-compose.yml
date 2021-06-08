@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    restart: always
+    container_name: gist_viewer_web
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    networks:
+      - appnetwork
+
+  postgres:
+    image: postgres:13
+    restart: always
+    container_name: gist_viewer_postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gist_viewer
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      # Copy the SQL script to create tables
+      - ./sql/create-tables.sql:/docker-entrypoint-initdb.d/create-tables.sql
+    networks:
+      - appnetwork
+
+networks:
+  appnetwork:
+    driver: bridge
+
+volumes:
+  postgres-data:
