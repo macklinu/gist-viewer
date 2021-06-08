@@ -7,6 +7,7 @@ export const typeDefs = gql`
     updated_at: String!
     description: String!
     files: [GistFile!]!
+    meta: GistMeta!
   }
 
   type GistFile {
@@ -23,6 +24,10 @@ export const typeDefs = gql`
     pageInfo: PageInfo!
   }
 
+  type GistMeta {
+    isFavorite: Boolean!
+  }
+
   type PageInfo {
     hasNextPage: Boolean!
   }
@@ -34,5 +39,10 @@ export const typeDefs = gql`
       perPage: Int
     ): GistsConnection
     getGistById(gistId: String!): Gist
+  }
+
+  type Mutation {
+    favoriteGist(gistId: String!): Gist
+    unfavoriteGist(gistId: String!): Gist
   }
 `

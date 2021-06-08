@@ -1,33 +1,44 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import React from 'react'
 
-const GistQuery = gql`
+const GistFragment = gql`
+  fragment GistFragment on Gist {
+    id
+    description
+    created_at
+    files {
+      filename
+      content
+    }
+    meta {
+      isFavorite
+    }
+  }
+`
+
+const GetPublicGistsForUserQuery = gql`
   query GetPublicGistsForUser($username: String!) {
     getPublicGistsForUser(username: $username) {
       nodes {
-        id
-        description
-        created_at
+        ...GistFragment
       }
       pageInfo {
         hasNextPage
       }
     }
   }
+
+  ${GistFragment}
 `
 
 const GetGistByIdQuery = gql`
   query GetGistById($gistId: String!) {
     getGistById(gistId: $gistId) {
-      id
-      description
-      created_at
-      files {
-        filename
-        content
-      }
+      ...GistFragment
     }
   }
+
+  ${GistFragment}
 `
 
 function usePageState() {
@@ -95,7 +106,7 @@ export default function IndexPage() {
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
-          <SearchView
+          <SearchResults
             username={debouncedUsername}
             onGistClick={(gistId) => viewGist(gistId)}
           />
@@ -106,8 +117,8 @@ export default function IndexPage() {
   )
 }
 
-const SearchView = React.memo(({ username, onGistClick }) => {
-  const gists = useQuery(GistQuery, {
+function SearchResults({ username, onGistClick }) {
+  const gists = useQuery(GetPublicGistsForUserQuery, {
     variables: { username },
     skip: !username,
   })
@@ -134,14 +145,15 @@ const SearchView = React.memo(({ username, onGistClick }) => {
       {/* TODO support pagination */}
     </div>
   )
-})
+}
 
-function GistSummary({ description, created_at }) {
+function GistSummary({ description, created_at, meta: { isFavorite } }) {
   const formattedTime = new Intl.DateTimeFormat('en').format(
     Date.parse(created_at)
   )
   return (
     <div>
+      <span>{isFavorite ? '⭐️' : null}</span>
       <span style={{ fontSize: '0.8em' }}>
         <time dateTime={created_at}>[{formattedTime}]</time>
       </span>{' '}
@@ -159,8 +171,31 @@ function useDebounce(value, delayMs) {
   return debouncedValue
 }
 
+const FavoriteGistMutation = gql`
+  mutation FavoriteGist($gistId: String!) {
+    favoriteGist(gistId: $gistId) {
+      ...GistFragment
+    }
+  }
+
+  ${GistFragment}
+`
+
+const UnfavoriteGistMutation = gql`
+  mutation UnfavoriteGist($gistId: String!) {
+    unfavoriteGist(gistId: $gistId) {
+      ...GistFragment
+    }
+  }
+
+  ${GistFragment}
+`
+
 function GistDetailView({ gistId }) {
   const gist = useQuery(GetGistByIdQuery, { variables: { gistId } })
+  const [favoriteGist] = useMutation(FavoriteGistMutation)
+  const [unfavoriteGist] = useMutation(UnfavoriteGistMutation)
+
   if (gist.loading) {
     return <div>Loading...</div>
   }
@@ -171,13 +206,24 @@ function GistDetailView({ gistId }) {
     return <div>Gist {gistId} not found.</div>
   }
 
+  const { files, description, meta } = gist.data.getGistById
+
   return (
     <div>
       <div>
         <h2>Gist {gistId}</h2>
-        <h3>{gist.data.getGistById.description}</h3>
+        <h3>{description}</h3>
+        {meta.isFavorite ? (
+          <button onClick={() => unfavoriteGist({ variables: { gistId } })}>
+            Remove from Favorites
+          </button>
+        ) : (
+          <button onClick={() => favoriteGist({ variables: { gistId } })}>
+            Mark as Favorite
+          </button>
+        )}
       </div>
-      {gist.data.getGistById.files.map((file) => (
+      {files.map((file) => (
         <div key={file.filename}>
           <h4>{file.filename}</h4>
           <pre>{file.content}</pre>
