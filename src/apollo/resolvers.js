@@ -24,6 +24,27 @@ export const resolvers = {
     async getGistById(_parent, { gistId }) {
       return getGistById(gistId)
     },
+    async getFavoriteGists(_parent, { offset = 0, limit = 50 }) {
+      const gistIds = await postgres.getFavoriteGists({
+        offset,
+        limit: Math.max(limit, 50),
+      })
+      try {
+        const [favorites, ...gistResponses] = await Promise.all([
+          postgres.findFavoritesByGistIds(gistIds),
+          ...gistIds.map(async (gistId) => github.getGistById(gistId)),
+        ])
+        return gistResponses.map(({ data }) => ({
+          ...convertGistForSchema(data),
+          meta: {
+            isFavorite: favorites.has(data.id),
+          },
+        }))
+      } catch (error) {
+        console.error(error)
+        return []
+      }
+    },
   },
   Mutation: {
     async favoriteGist(_parent, { gistId }) {

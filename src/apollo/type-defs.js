@@ -39,6 +39,7 @@ export const typeDefs = gql`
       perPage: Int
     ): GistsConnection
     getGistById(gistId: String!): Gist
+    getFavoriteGists(limit: Int, offset: Int): [Gist!]!
   }
 
   type Mutation {

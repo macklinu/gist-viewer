@@ -8,6 +8,14 @@ const pool = new Pool({
   host: 'postgres',
 })
 
+export async function getFavoriteGists({ offset = 0, limit = 50 }) {
+  const { rows } = await pool.query(
+    'SELECT gist_id FROM favorite_gists LIMIT $1 OFFSET $2',
+    [limit, offset]
+  )
+  return rows.map((row) => row.gist_id)
+}
+
 export async function findFavoritesByGistIds(gistIds) {
   const placeholders = gistIds.map((_, index) => `$${index + 1}`).join(',')
   const { rows } = await pool.query(
