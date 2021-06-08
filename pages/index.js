@@ -16,31 +16,6 @@ const GistFragment = gql`
   }
 `
 
-const GetPublicGistsForUserQuery = gql`
-  query GetPublicGistsForUser($username: String!) {
-    getPublicGistsForUser(username: $username) {
-      nodes {
-        ...GistFragment
-      }
-      pageInfo {
-        hasNextPage
-      }
-    }
-  }
-
-  ${GistFragment}
-`
-
-const GetGistByIdQuery = gql`
-  query GetGistById($gistId: String!) {
-    getGistById(gistId: $gistId) {
-      ...GistFragment
-    }
-  }
-
-  ${GistFragment}
-`
-
 function usePageState() {
   const [state, dispatch] = React.useReducer(
     (state, action) => {
@@ -117,6 +92,21 @@ export default function IndexPage() {
   )
 }
 
+const GetPublicGistsForUserQuery = gql`
+  query GetPublicGistsForUser($username: String!) {
+    getPublicGistsForUser(username: $username) {
+      nodes {
+        ...GistFragment
+      }
+      pageInfo {
+        hasNextPage
+      }
+    }
+  }
+
+  ${GistFragment}
+`
+
 function SearchResults({ username, onGistClick }) {
   const gists = useQuery(GetPublicGistsForUserQuery, {
     variables: { username },
@@ -170,6 +160,16 @@ function useDebounce(value, delayMs) {
   }, [value, delayMs])
   return debouncedValue
 }
+
+const GetGistByIdQuery = gql`
+  query GetGistById($gistId: String!) {
+    getGistById(gistId: $gistId) {
+      ...GistFragment
+    }
+  }
+
+  ${GistFragment}
+`
 
 const FavoriteGistMutation = gql`
   mutation FavoriteGist($gistId: String!) {
