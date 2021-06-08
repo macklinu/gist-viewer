@@ -22,3 +22,15 @@ export async function getPublicGistsForUser(username, params = {}) {
   const response = await api.get(`/users/${username}/gists`, { params })
   return response
 }
+
+/**
+ * Gets a gist by gist ID.
+ *
+ * https://docs.github.com/en/rest/reference/gists#get-a-gist
+ *
+ * @param {string} gistId
+ */
+export async function getGistById(gistId) {
+  const response = await api.get(`/gists/${gistId}`)
+  return response
+}

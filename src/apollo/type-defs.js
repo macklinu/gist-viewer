@@ -6,6 +6,16 @@ export const typeDefs = gql`
     created_at: String!
     updated_at: String!
     description: String!
+    files: [GistFile!]!
+  }
+
+  type GistFile {
+    filename: String!
+    type: String
+    language: String
+    raw_url: String!
+    size: Int
+    content: String
   }
 
   type GistsConnection {
@@ -23,5 +33,6 @@ export const typeDefs = gql`
       page: Int
       perPage: Int
     ): GistsConnection
+    getGistById(gistId: String!): Gist
   }
 `
