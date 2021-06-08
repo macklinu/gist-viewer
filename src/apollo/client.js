@@ -1,3 +1,5 @@
+// Bootstrapped from https://github.com/vercel/next.js/tree/canary/examples/api-routes-apollo-server-and-client
+
 import { useMemo } from 'react'
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 
